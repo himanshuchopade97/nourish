@@ -120,8 +120,7 @@ class _DashboardPageState extends State<DashboardPage> {
               title: 'Logout',
               onTap: () {
                 // Handle logout logic (e.g., clear session, navigate to login)
-                Navigator.pushReplacementNamed(
-                    context, '/login'); // Adjust route as needed
+                Navigator.pushReplacementNamed(context, '/landing'); // Adjust route as needed
               },
             ),
           ],

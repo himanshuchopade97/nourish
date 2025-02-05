@@ -20,9 +20,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Nourish',
       routes: {
-        '/': (context) => LoginPage(),  // Dashboard page route
+        '/': (context) => HomePage(),  // Dashboard page route
+        '/landing': (context) => HomePage(),
         '/login': (context) => LoginPage(), // Login page route
         '/register': (context) => RegisterPage(), //Register page route 
+        '/dashboard': (context) => DashboardPage(),
         '/recommendations': (context) => RecommendationsPage(), 
       },
       theme: ThemeData(primarySwatch: Colors.red),

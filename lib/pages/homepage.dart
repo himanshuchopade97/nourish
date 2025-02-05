@@ -73,6 +73,7 @@ class _HomePageState extends State<HomePage> {
                       ElevatedButton(
                         onPressed: () {
                           // Handle Sign-up action
+                          Navigator.pushReplacementNamed(context, '/register');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
@@ -88,10 +89,7 @@ class _HomePageState extends State<HomePage> {
                       ElevatedButton(
                         onPressed: () {
                           // Handle Log-in action
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const LoginPage()),
-                          );
+                          Navigator.pushReplacementNamed(context, '/login');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,

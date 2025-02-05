@@ -13,9 +13,19 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
   final Map<String, Map<String, double>> foodData = {
     "Avocado": {"Protein": 2.0, "Fats": 15.0, "Carbs": 9.0, "Fiber": 7.0},
     "Strawberries": {"Protein": 0.8, "Fats": 0.3, "Carbs": 7.7, "Fiber": 2.0},
-    "Chicken Breast": {"Protein": 31.0, "Fats": 3.6, "Carbs": 0.0, "Fiber": 0.0},
+    "Chicken Breast": {
+      "Protein": 31.0,
+      "Fats": 3.6,
+      "Carbs": 0.0,
+      "Fiber": 0.0
+    },
     "Almonds": {"Protein": 21.0, "Fats": 49.0, "Carbs": 22.0, "Fiber": 12.0},
-    "Whole Grain Bread": {"Protein": 4.0, "Fats": 1.0, "Carbs": 13.0, "Fiber": 2.0},
+    "Whole Grain Bread": {
+      "Protein": 4.0,
+      "Fats": 1.0,
+      "Carbs": 13.0,
+      "Fiber": 2.0
+    },
     "Salmon": {"Protein": 25.0, "Fats": 13.0, "Carbs": 0.0, "Fiber": 0.0},
   };
 
@@ -54,7 +64,8 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
               TextField(
                 decoration: InputDecoration(labelText: "Protein (g)"),
                 keyboardType: TextInputType.number,
-                onChanged: (value) => proteinVal = double.tryParse(value) ?? 0.0,
+                onChanged: (value) =>
+                    proteinVal = double.tryParse(value) ?? 0.0,
               ),
               TextField(
                 decoration: InputDecoration(labelText: "Fats (g)"),
@@ -105,8 +116,17 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text("Add Food Item", style: TextStyle(color: Colors.grey[100]),),
+        title: Text(
+          "Add Food Item",
+          style: TextStyle(color: Colors.grey[100]),
+        ),
         backgroundColor: Colors.black,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.grey[100]),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/dashboard');// Navigates back to the previous screen
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -163,7 +183,10 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
               ),
-              child: Text("Get More Recommendations", style: TextStyle(color: Colors.grey[200],fontSize: 16),),
+              child: Text(
+                "Get More Recommendations",
+                style: TextStyle(color: Colors.grey[200], fontSize: 16),
+              ),
             ),
             SizedBox(height: 20),
             Text(
@@ -179,7 +202,8 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                     backgroundColor: Colors.grey[800],
                   ),
                   onPressed: () => updateFood(food),
-                  child: Text(food, style: TextStyle(color: Colors.white, fontSize: 15)),
+                  child: Text(food,
+                      style: TextStyle(color: Colors.white, fontSize: 15)),
                 );
               }).toList(),
             ),
@@ -191,7 +215,8 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                 child: Text(
                   "Did You Know?\nEating fiber-rich foods like oats and lentils can help maintain healthy digestion and keep you full for longer!",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -201,7 +226,10 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: addCustomFood,
         backgroundColor: Colors.green,
-        child: Icon(Icons.add, color: Colors.grey[100],),
+        child: Icon(
+          Icons.add,
+          color: Colors.grey[100],
+        ),
       ),
     );
   }

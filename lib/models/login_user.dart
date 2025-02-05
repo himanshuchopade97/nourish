@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nourish/pages/dashboard.dart';
 
 Future<void> loginUser(BuildContext context, String email, String password) async {
-  final url = Uri.parse('http://192.168.1.9:5000/api/auth/login'); // Update with your login API URL
+  final url = Uri.parse('http://10.24.67.143:5000/api/auth/login'); // Update with your login API URL
 
   final data = {
     'email': email,  // Send email
@@ -20,10 +20,7 @@ Future<void> loginUser(BuildContext context, String email, String password) asyn
 
     if (response.statusCode == 200) {
       // Login successful, navigate to dashboard
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const DashboardPage()),
-      );
+      Navigator.pushReplacementNamed(context, '/dashboard');
     } else {
       // Handle error (incorrect credentials or other issues)
       ScaffoldMessenger.of(context).showSnackBar(
