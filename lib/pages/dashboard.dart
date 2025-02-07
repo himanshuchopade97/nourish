@@ -90,6 +90,7 @@ class _DashboardPageState extends State<DashboardPage> {
               title: 'Home',
               onTap: () {
                 // Navigate to Home
+                Navigator.pushReplacementNamed(context, '/dashboard');
               },
             ),
             _buildDrawerItem(
@@ -105,6 +106,7 @@ class _DashboardPageState extends State<DashboardPage> {
               title: 'Track Vitals',
               onTap: () {
                 // Navigate to Track Vitals
+                Navigator.pushReplacementNamed(context, '/vitals');
               },
             ),
             _buildDrawerItem(

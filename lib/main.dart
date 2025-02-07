@@ -5,6 +5,7 @@ import 'package:nourish/pages/homepage.dart';
 import 'package:nourish/pages/loginpage.dart';
 import 'package:nourish/pages/loginpage2.dart';
 import 'package:nourish/pages/registerpage.dart';
+import 'package:nourish/pages/vitals.dart';
 
 void main() async {
 
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegisterPage(), //Register page route 
         '/dashboard': (context) => DashboardPage(),
         '/recommendations': (context) => RecommendationsPage(), 
+        '/vitals': (context) => VitalsPage(),
       },
       theme: ThemeData(primarySwatch: Colors.red),
       // home:  AddNewFood(),
