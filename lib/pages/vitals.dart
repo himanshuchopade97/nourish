@@ -175,13 +175,6 @@ class _VitalsPageState extends State<VitalsPage> {
                                 style: TextStyle(color: Colors.white)),
                             onTap: () async {
                               // Implement call functionality
-                              final Uri phoneUri =
-                                  Uri.parse("tel:+916351555696");
-                              if (await canLaunchUrl(phoneUri)) {
-                                await launchUrl(phoneUri);
-                              } else {
-                                throw "Could not launch $phoneUri";
-                              }
                             },
                           ),
                           ListTile(

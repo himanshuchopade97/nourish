@@ -3,7 +3,6 @@ import 'package:nourish/pages/recommendations_page.dart';
 import 'package:nourish/pages/dashboard.dart';
 import 'package:nourish/pages/homepage.dart';
 import 'package:nourish/pages/loginpage.dart';
-import 'package:nourish/pages/loginpage2.dart';
 import 'package:nourish/pages/registerpage.dart';
 import 'package:nourish/pages/vitals.dart';
 

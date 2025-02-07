@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   const Column(
                     children: [
-                       Text(
+                      Text(
                         'Welcome to the world of',
                         style: TextStyle(
                           color: Colors.white,
@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                       Text(
+                      Text(
                         'REAL 🌿 Fitness',
                         style: TextStyle(
                           color: Colors.white,
@@ -53,9 +53,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 50),
-
                   const Text(
                     'Be fit from Within',
                     style: TextStyle(
@@ -64,12 +62,24 @@ class _HomePageState extends State<HomePage> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-
                   const SizedBox(height: 80),
-                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          // Handle Log-in action
+                          Navigator.pushReplacementNamed(context, '/login');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 42, vertical: 18),
+                        ),
+                        child: const Text('Log-in'),
+                      ),
+                      const SizedBox(width: 20),
                       ElevatedButton(
                         onPressed: () {
                           // Handle Sign-up action
@@ -82,22 +92,6 @@ class _HomePageState extends State<HomePage> {
                               horizontal: 40, vertical: 15),
                         ),
                         child: const Text('Sign-up'),
-                      ),
-
-                      const SizedBox(width: 20),
-                      
-                      ElevatedButton(
-                        onPressed: () {
-                          // Handle Log-in action
-                          Navigator.pushReplacementNamed(context, '/login');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 15),
-                        ),
-                        child: const Text('Log-in'),
                       ),
                     ],
                   ),
