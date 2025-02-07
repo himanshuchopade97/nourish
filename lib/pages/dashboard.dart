@@ -107,7 +107,7 @@ class _DashboardPageState extends State<DashboardPage> {
               onTap: () {
                 // Navigate to Track Vitals
                 Navigator.pushNamed(context, '/vitals');
-                Navigator.pop(context);
+                
               },
             ),
             _buildDrawerItem(
