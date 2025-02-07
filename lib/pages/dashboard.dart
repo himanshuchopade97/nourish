@@ -88,9 +88,9 @@ class _DashboardPageState extends State<DashboardPage> {
             _buildDrawerItem(
               icon: Icons.home_outlined,
               title: 'Home',
-              onTap: () {
+              onTap: ()async {
                 // Navigate to Home
-                Navigator.pushReplacementNamed(context, '/dashboard');
+                Navigator.pop(context);
               },
             ),
             _buildDrawerItem(
@@ -98,7 +98,7 @@ class _DashboardPageState extends State<DashboardPage> {
               title: 'Recommendations',
               onTap: () {
                 // Navigate to Recommendations
-                Navigator.pushReplacementNamed(context, '/recommendations');
+                Navigator.pushNamed(context, '/recommendations');
               },
             ),
             _buildDrawerItem(
@@ -106,7 +106,8 @@ class _DashboardPageState extends State<DashboardPage> {
               title: 'Track Vitals',
               onTap: () {
                 // Navigate to Track Vitals
-                Navigator.pushReplacementNamed(context, '/vitals');
+                Navigator.pushNamed(context, '/vitals');
+                Navigator.pop(context);
               },
             ),
             _buildDrawerItem(

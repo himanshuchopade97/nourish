@@ -69,13 +69,13 @@ class _HomePageState extends State<HomePage> {
                       ElevatedButton(
                         onPressed: () {
                           // Handle Log-in action
-                          Navigator.pushReplacementNamed(context, '/login');
+                          Navigator.pushNamed(context, '/login');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 42, vertical: 18),
+                              horizontal: 40, vertical: 18),
                         ),
                         child: const Text('Log-in'),
                       ),
@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                       ElevatedButton(
                         onPressed: () {
                           // Handle Sign-up action
-                          Navigator.pushReplacementNamed(context, '/register');
+                          Navigator.pushNamed(context, '/register');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
