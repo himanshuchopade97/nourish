@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -8,14 +11,74 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  int calories = 1800;
+  int calories = 0;
+  double protein = 0.0;
+  double carbs = 0.0;
+  double fat = 0.0;
+  double fiber = 0.0;
+  String username = "Loading...";
+  String userId = '';
+  List<String> selectedFoodItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getUsername();
+    _getSelectedFoodItems(); // Fetch food data on page load
+  }
+
+  Future<String> _getUsername() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('_id', userId);
+    setState(() {
+      username = prefs.getString('username') ?? "User";
+      
+    });
+    return username;
+  }
+
+    Future<void> _getSelectedFoodItems() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedFoodItems = prefs.getStringList('selected_food') ?? [];
+    });
+    _fetchFoodData(); // Fetch only user-entered food data
+  }
+
+   Future<void> _fetchFoodData() async {
+    if (selectedFoodItems.isEmpty) return; // If no food is selected, do nothing
+
+    try {
+      final response = await http.post(
+        Uri.parse("http://192.168.1.8:5000/api/auth/food"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"food_items": selectedFoodItems}),
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          calories = data.fold<int>(0, (sum, item) => sum + (item["energy_kcal"] as num).toInt());
+          protein = data.fold<double>(0, (sum, item) => sum + (item["protein_g"] as num).toDouble());
+          carbs = data.fold<double>(0, (sum, item) => sum + (item["carb_g"] as num).toDouble());
+          fat = data.fold<double>(0, (sum, item) => sum + (item["fat_g"] as num).toDouble());
+          fiber = data.fold<double>(0, (sum, item) => sum + (item["fibre_g"] as num).toDouble());
+        });
+      } else {
+        print("Error fetching food data: ${response.body}");
+      }
+    } catch (e) {
+      print("Network Error: $e");
+    }
+  }
+
 
   Widget _buildCard(
       {required IconData icon,
       required String title,
       required String buttonText}) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(12),
@@ -60,14 +123,14 @@ class _DashboardPageState extends State<DashboardPage> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.green,
-              ),
+              decoration: BoxDecoration(color: Colors.green),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Welcome!',
+                  Icon(Icons.account_circle, size: 60, color: Colors.white),
+                  SizedBox(height: 10),
+                  Text(
+                    "Welcome, $username",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -86,10 +149,14 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
             _buildDrawerItem(
+              icon: Icons.person,
+              title: 'Profile',
+              onTap: () async {},
+            ),
+            _buildDrawerItem(
               icon: Icons.home_outlined,
               title: 'Home',
-              onTap: ()async {
-                // Navigate to Home
+              onTap: () async {
                 Navigator.pop(context);
               },
             ),
@@ -97,7 +164,6 @@ class _DashboardPageState extends State<DashboardPage> {
               icon: Icons.recommend_outlined,
               title: 'Recommendations',
               onTap: () {
-                // Navigate to Recommendations
                 Navigator.pushNamed(context, '/recommendations');
               },
             ),
@@ -105,25 +171,20 @@ class _DashboardPageState extends State<DashboardPage> {
               icon: Icons.favorite_outline,
               title: 'Track Vitals',
               onTap: () {
-                // Navigate to Track Vitals
                 Navigator.pushNamed(context, '/vitals');
-                
               },
             ),
             _buildDrawerItem(
               icon: Icons.star_outline,
               title: 'Explore Premium',
-              onTap: () {
-                // Navigate to Explore Premium
-              },
+              onTap: () {},
             ),
             const Divider(color: Colors.white),
             _buildDrawerItem(
               icon: Icons.logout,
               title: 'Logout',
               onTap: () {
-                // Handle logout logic (e.g., clear session, navigate to login)
-                Navigator.pushReplacementNamed(context, '/landing'); // Adjust route as needed
+                Navigator.pushReplacementNamed(context, '/landing');
               },
             ),
           ],
@@ -150,7 +211,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Circular Progress Indicator
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -161,7 +221,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               width: 150,
                               height: 150,
                               child: CircularProgressIndicator(
-                                value: calories / 3000,
+                                value: (calories / 3000).clamp(0.0, 1.0),
                                 strokeWidth: 10,
                                 backgroundColor: Colors.grey.shade800,
                                 color: Colors.green,
@@ -181,23 +241,20 @@ class _DashboardPageState extends State<DashboardPage> {
                       ],
                     ),
                     const SizedBox(height: 20),
-
-                    // Nutritional Bars
                     Column(
                       children: [
-                        _buildNutrientRow("Protein", 0.7),
-                        _buildNutrientRow("Fiber", 0.5),
-                        _buildNutrientRow("Carbs", 0.8),
-                        _buildNutrientRow("Fats", 0.3),
+                        _buildNutrientRow("Protein", protein / 100),
+                        _buildNutrientRow("Fiber", fiber / 100),
+                        _buildNutrientRow("Carbs", carbs / 100),
+                        _buildNutrientRow("Fats", fat / 100),
                       ],
                     ),
                     const SizedBox(height: 20),
-
-                    // Add Food Item Button
                     Center(
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Handle Add Food Item action
+                        onPressed: () async{
+                           Navigator.pushNamed(context, '/addfooditem');
+                          
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
@@ -206,36 +263,32 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: const Text("Add Food Item"),
                       ),
                     ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Grid Cards
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    _buildCard(
-                      icon: Icons.bloodtype_outlined,
-                      title: "Sugar Levels",
-                      buttonText: "Add new Reading",
-                    ),
-                    _buildCard(
-                      icon: Icons.monitor_weight_outlined,
-                      title: "Body Weight",
-                      buttonText: "Add new Reading",
-                    ),
-                    _buildCard(
-                      icon: Icons.visibility_outlined,
-                      title: "Recommendations",
-                      buttonText: "Review",
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        shrinkWrap: true,
+                        physics:  AlwaysScrollableScrollPhysics(),
+                        children: [
+                          _buildCard(
+                            icon: Icons.bloodtype_outlined,
+                            title: "Sugar Levels",
+                            buttonText: "Add new Reading",
+                          ),
+                          _buildCard(
+                            icon: Icons.monitor_weight_outlined,
+                            title: "Body Weight",
+                            buttonText: "Add new Reading",
+                          ),
+                          _buildCard(
+                            icon: Icons.visibility_outlined,
+                            title: "Recommendations",
+                            buttonText: "Review",
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -261,7 +314,7 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: LinearProgressIndicator(
-                value: value,
+                value: value.clamp(0.0, 1.0),
                 color: Colors.green,
                 backgroundColor: Colors.grey[800],
               ),
@@ -282,10 +335,7 @@ class _DashboardPageState extends State<DashboardPage> {
       required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon, color: Colors.white),
-      title: Text(
-        title,
-        style: const TextStyle(color: Colors.white),
-      ),
+      title: Text(title, style: const TextStyle(color: Colors.white)),
       onTap: onTap,
     );
   }
