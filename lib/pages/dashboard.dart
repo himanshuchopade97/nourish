@@ -151,7 +151,9 @@ class _DashboardPageState extends State<DashboardPage> {
             _buildDrawerItem(
               icon: Icons.person,
               title: 'Profile',
-              onTap: () async {},
+              onTap: () async {
+                Navigator.pushNamed(context, '/profile');
+              },
             ),
             _buildDrawerItem(
               icon: Icons.home_outlined,

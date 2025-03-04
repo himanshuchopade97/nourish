@@ -6,15 +6,12 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool isNotARobot = false;
-
-  // Controllers for email and password fields
-  final TextEditingController _emailController = TextEditingController();
+  // Controllers for username and password fields
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -48,18 +45,14 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    const SizedBox(
-                      height: 135,
-                    ),
-
-                    // Email Field
+                    const SizedBox(height: 135),
+                    // Username Field
                     TextField(
-                      controller: _emailController,  // Use controller for email field
+                      controller: _usernameController,
                       decoration: InputDecoration(
-                        labelText: 'Email',
+                        labelText: 'Username',
                         labelStyle: const TextStyle(color: Colors.white),
-                        hintText: 'Email',
+                        hintText: 'Username',
                         hintStyle: const TextStyle(color: Colors.white54),
                         filled: true,
                         fillColor: Colors.black.withOpacity(0.2),
@@ -69,12 +62,10 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       style: const TextStyle(color: Colors.white),
                     ),
-
                     const SizedBox(height: 20),
-
                     // Password Field
                     TextField(
-                      controller: _passwordController,  // Use controller for password field
+                      controller: _passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Password',
@@ -89,44 +80,22 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       style: const TextStyle(color: Colors.white),
                     ),
-
                     const SizedBox(height: 20),
-
-                    // // "Not a robot" Checkbox
-                    // Row(
-                    //   children: [
-                    //     Checkbox(
-                    //       value: isNotARobot,
-                    //       onChanged: (bool? value) {
-                    //         setState(() {
-                    //           isNotARobot = value ?? false;
-                    //         });
-                    //       },
-                    //       activeColor: Colors.red,
-                    //     ),
-                    //     const Text(
-                    //       'Not a robot',
-                    //       style: TextStyle(color: Colors.white),
-                    //     ),
-                    //   ],
-                    // ),
-
-                    const SizedBox(height: 20),
-
                     // Submit Button
                     ElevatedButton(
                       onPressed: () {
-                        // Call the login function with email and password
+                        // Call the login function with username and password
                         loginUser(
                           context,
-                          _emailController.text,  // Get email from controller
-                          _passwordController.text,  // Get password from controller
+                          _usernameController.text,
+                          _passwordController.text,
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 15),
                       ),
                       child: const Text('Submit'),
                     ),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nourish/pages/loginpage.dart'; // Ensure correct import
 
 Future<void> registerUser(BuildContext context, String firstName, String lastName, String email, String contact, String username, String password) async {
-  final url = Uri.parse('http://10.24.75.211:5000/api/auth/register'); // Update with your registration API URL
+  final url = Uri.parse('http://192.168.1.8:5000/api/auth/register'); // Update with your registration API URL
 
   final data = {
     'firstName': firstName,
