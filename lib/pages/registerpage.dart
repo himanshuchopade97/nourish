@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:nourish/models/register_user.dart';
-import 'package:nourish/pages/loginpage.dart'; // Import Login Page
+import 'package:nourish/pages/loginpage.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _RegisterPageState createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // Controllers for name, email, and password fields
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _contactController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -21,7 +22,6 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -30,109 +30,100 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-          // Overlay
           Container(
             color: Colors.black.withOpacity(0.7),
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
                       'REGISTER',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 28,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    const SizedBox(height: 135),
-
-                    // Name Field
-                    TextField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        labelStyle: const TextStyle(color: Colors.white),
-                        hintText: 'Full Name',
-                        hintStyle: const TextStyle(color: Colors.white54),
-                        filled: true,
-                        fillColor: Colors.black.withOpacity(0.2),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                      ),
-                      style: const TextStyle(color: Colors.white),
+                    const SizedBox(height: 40),
+                    _buildTextField(
+                      controller: _firstNameController,
+                      labelText: 'First Name',
+                      hintText: 'Enter your first name',
                     ),
-
-                    const SizedBox(height: 20),
-
-                    // Email Field
-                    TextField(
+                    const SizedBox(height: 12),
+                    _buildTextField(
+                      controller: _lastNameController,
+                      labelText: 'Last Name',
+                      hintText: 'Enter your last name',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildTextField(
                       controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        labelStyle: const TextStyle(color: Colors.white),
-                        hintText: 'Email',
-                        hintStyle: const TextStyle(color: Colors.white54),
-                        filled: true,
-                        fillColor: Colors.black.withOpacity(0.2),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                      ),
-                      style: const TextStyle(color: Colors.white),
+                      labelText: 'Email',
+                      hintText: 'Enter your email',
+                      keyboardType: TextInputType.emailAddress,
                     ),
-
-                    const SizedBox(height: 20),
-
-                    // Password Field
-                    TextField(
+                    const SizedBox(height: 12),
+                    _buildTextField(
+                      controller: _contactController,
+                      labelText: 'Contact',
+                      hintText: 'Enter your contact number',
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildTextField(
+                      controller: _usernameController,
+                      labelText: 'Username',
+                      hintText: 'Choose a username',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildTextField(
                       controller: _passwordController,
+                      labelText: 'Password',
+                      hintText: 'Enter your password',
                       obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: const TextStyle(color: Colors.white),
-                        hintText: 'Password',
-                        hintStyle: const TextStyle(color: Colors.white54),
-                        filled: true,
-                        fillColor: Colors.black.withOpacity(0.2),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                      ),
-                      style: const TextStyle(color: Colors.white),
                     ),
-
-                    const SizedBox(height: 20),
-
-                    // Submit Button
+                    const SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () {
-                        // Call the register function with name, email, and password
                         registerUser(
                           context,
-                          _nameController.text,
+                          _firstNameController.text,
+                          _lastNameController.text,
                           _emailController.text,
+                          _contactController.text,
+                          _usernameController.text,
                           _passwordController.text,
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
-                      child: const Text('Register'),
+                      child: const Text(
+                        'Register',
+                        style: TextStyle(fontSize: 18),
+                      ),
                     ),
-
-                    // Redirect to login page
+                    const SizedBox(height: 20),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
+                        registerUser(
                           context,
-                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                          _firstNameController.text,
+                          _lastNameController.text,
+                          _emailController.text,
+                          _contactController.text,
+                          _usernameController.text,
+                          _passwordController.text,
                         );
                       },
                       child: const Text(
@@ -147,6 +138,34 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    required String hintText,
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: const TextStyle(color: Colors.white),
+        hintText: hintText,
+        hintStyle: const TextStyle(color: Colors.white54),
+        filled: true,
+        fillColor: Colors.black.withOpacity(0.2),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      ),
+      style: const TextStyle(color: Colors.white),
     );
   }
 }

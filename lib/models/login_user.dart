@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:nourish/pages/dashboard.dart';
 
 Future<void> loginUser(BuildContext context, String email, String password) async {
-  final url = Uri.parse('http://192.168.1.8:5000/api/auth/login'); // Update with your login API URL
+
+  
+
+  final url = Uri.parse('http://10.24.75.211:5000/api/auth/login'); // Update with your login API URL
 
   final data = {
     'email': email,  // Send email
