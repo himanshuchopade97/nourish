@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         '/addfooditem': (context) => AddFoodItem(),
          '/profile': (context) => ProfilePage(),
       },
-      theme: ThemeData(primarySwatch: Colors.red),
+      theme: ThemeData(primarySwatch: Colors.green),
       // home:  AddNewFood(),
     );
   }

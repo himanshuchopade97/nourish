@@ -121,12 +121,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
           style: TextStyle(color: Colors.grey[100]),
         ),
         backgroundColor: Colors.black,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.grey[100]),
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/dashboard');// Navigates back to the previous screen
-          },
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -32,12 +32,11 @@ class _DashboardPageState extends State<DashboardPage> {
     await prefs.setString('_id', userId);
     setState(() {
       username = prefs.getString('username') ?? "User";
-      
     });
     return username;
   }
 
-    Future<void> _getSelectedFoodItems() async {
+  Future<void> _getSelectedFoodItems() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       selectedFoodItems = prefs.getStringList('selected_food') ?? [];
@@ -45,7 +44,7 @@ class _DashboardPageState extends State<DashboardPage> {
     _fetchFoodData(); // Fetch only user-entered food data
   }
 
-   Future<void> _fetchFoodData() async {
+  Future<void> _fetchFoodData() async {
     if (selectedFoodItems.isEmpty) return; // If no food is selected, do nothing
 
     try {
@@ -58,11 +57,16 @@ class _DashboardPageState extends State<DashboardPage> {
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         setState(() {
-          calories = data.fold<int>(0, (sum, item) => sum + (item["energy_kcal"] as num).toInt());
-          protein = data.fold<double>(0, (sum, item) => sum + (item["protein_g"] as num).toDouble());
-          carbs = data.fold<double>(0, (sum, item) => sum + (item["carb_g"] as num).toDouble());
-          fat = data.fold<double>(0, (sum, item) => sum + (item["fat_g"] as num).toDouble());
-          fiber = data.fold<double>(0, (sum, item) => sum + (item["fibre_g"] as num).toDouble());
+          calories = data.fold<int>(
+              0, (sum, item) => sum + (item["energy_kcal"] as num).toInt());
+          protein = data.fold<double>(
+              0, (sum, item) => sum + (item["protein_g"] as num).toDouble());
+          carbs = data.fold<double>(
+              0, (sum, item) => sum + (item["carb_g"] as num).toDouble());
+          fat = data.fold<double>(
+              0, (sum, item) => sum + (item["fat_g"] as num).toDouble());
+          fiber = data.fold<double>(
+              0, (sum, item) => sum + (item["fibre_g"] as num).toDouble());
         });
       } else {
         print("Error fetching food data: ${response.body}");
@@ -71,7 +75,6 @@ class _DashboardPageState extends State<DashboardPage> {
       print("Network Error: $e");
     }
   }
-
 
   Widget _buildCard(
       {required IconData icon,
@@ -185,7 +188,11 @@ class _DashboardPageState extends State<DashboardPage> {
             _buildDrawerItem(
               icon: Icons.logout,
               title: 'Logout',
-              onTap: () {
+              onTap: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.remove('token'); // Clear the token
+                await prefs.remove('username'); // clear the username
+                await prefs.remove('_id'); // clear the id
                 Navigator.pushReplacementNamed(context, '/landing');
               },
             ),
@@ -254,9 +261,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     const SizedBox(height: 20),
                     Center(
                       child: ElevatedButton(
-                        onPressed: () async{
-                           Navigator.pushNamed(context, '/addfooditem');
-                          
+                        onPressed: () async {
+                          Navigator.pushNamed(context, '/addfooditem');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
@@ -272,7 +278,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
                         shrinkWrap: true,
-                        physics:  AlwaysScrollableScrollPhysics(),
+                        physics: AlwaysScrollableScrollPhysics(),
                         children: [
                           _buildCard(
                             icon: Icons.bloodtype_outlined,

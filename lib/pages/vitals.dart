@@ -107,13 +107,7 @@ class _VitalsPageState extends State<VitalsPage> {
           "Track Vitals",
           style: TextStyle(color: Colors.white),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.grey[100]),
-          onPressed: () {
-            Navigator.pushReplacementNamed(
-                context, '/dashboard'); // Navigates back to the previous screen
-          },
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.black,
       ),
       body: Padding(
