@@ -18,6 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final TextEditingController _firstNameController = TextEditingController();
     final TextEditingController _lastNameController = TextEditingController();
     final TextEditingController _contactController = TextEditingController();
+     final TextEditingController _emailController = TextEditingController();
 
     @override
     void initState() {
@@ -29,6 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
     void dispose() {
         _firstNameController.dispose();
         _lastNameController.dispose();
+        _emailController.dispose();
         _contactController.dispose();
         super.dispose();
     }
@@ -63,6 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     _firstNameController.text = _userData['firstName'] ?? '';
                     _lastNameController.text = _userData['lastName'] ?? '';
                     _contactController.text = _userData['contact'] ?? '';
+                    _emailController.text = _userData['email'] ?? '';
                 });
             } else {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -157,6 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     _buildProfileItem('First Name', _firstNameController),
                                     _buildProfileItem('Last Name', _lastNameController),
                                     _buildProfileItem('Contact', _contactController),
+                                    _buildProfileItem('Email', _emailController),
                                 ],
                             )
                             : const Center(child: Text('Profile data not available.')),
