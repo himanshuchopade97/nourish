@@ -126,7 +126,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:5000/api/users/profile'),
+        Uri.parse('https://nourish-backend-enzv.onrender.com/api/users/profile'),
         headers: {
           "Authorization": "Bearer $token",
         },
@@ -167,7 +167,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
       }
 
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:5000/api/food/get-food?userId=$userId'),
+        Uri.parse('https://nourish-backend-enzv.onrender.com/api/food/get-food?userId=$userId'),
         headers: {
           "Authorization": "Bearer $token",
         },
