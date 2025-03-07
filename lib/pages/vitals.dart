@@ -13,15 +13,12 @@ class _VitalsPageState extends State<VitalsPage> {
   double weight = 85.0;
   String? token;
 
-  Future<void> _loadAuthToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    token = prefs.getString('token');
-  }
+
 
   @override
   void initState() {
     super.initState();
-    _loadAuthToken();
+    _sendVitals();
   }
 
   Future<void> _sendVitals() async {
@@ -38,7 +35,7 @@ class _VitalsPageState extends State<VitalsPage> {
     try {
       final response = await http.post(
         Uri.parse(
-            'http://10.0.2.2:5000/api/vitals'), // Replace with your backend URL
+            'http://10.0.2.2:5000/api/vitals/add'), // Replace with your backend URL
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
