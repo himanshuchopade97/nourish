@@ -10,7 +10,8 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
+class _ProfilePageState extends State<ProfilePage>
+    with SingleTickerProviderStateMixin {
   Map<String, dynamic> _userData = {};
   bool _isLoading = true;
   bool _isEditing = false;
@@ -80,6 +81,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
+    print("Fetching Profile - Token: $token"); // Add this line
+
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please log in to view your profile.')),
@@ -88,7 +91,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       return;
     }
 
-    final url = Uri.parse('http://10.0.2.2:5000/api/users/profile'); // Adjust URL if needed
+    final url = Uri.parse(
+        'http://10.0.2.2:5000/api/users/profile'); // Adjust URL if needed
 
     try {
       final response = await http.get(
@@ -98,6 +102,10 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           'Content-Type': 'application/json',
         },
       );
+
+      print(
+          "Fetch Profile - Response Status: ${response.statusCode}"); // Add this line
+      print("Fetch Profile - Response Body: ${response.body}"); // Add this line
 
       if (response.statusCode == 200) {
         setState(() {
@@ -131,11 +139,14 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
+    print("Updating Profile - Token: $token"); // Add this line
+
     if (token == null) {
       return;
     }
 
-    final url = Uri.parse('http://10.0.2.2:5000/api/users/profile'); // Adjust URL if needed
+    final url = Uri.parse(
+        'http://10.0.2.2:5000/api/users/profile'); // Adjust URL if needed
 
     try {
       final response = await http.put(
@@ -148,8 +159,14 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
           'firstname': _firstNameController.text,
           'lastname': _lastNameController.text,
           'contact': _contactController.text,
+          'email': _emailController.text,
         }),
       );
+
+      print(
+          "Update Profile - Response Status: ${response.statusCode}"); // Add this line
+      print(
+          "Update Profile - Response Body: ${response.body}"); // Add this line
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -196,7 +213,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             child: ScaleTransition(
               scale: _scaleAnimation,
               child: IconButton(
-                icon: Icon(_isEditing ? Icons.save : Icons.edit, color: Colors.green),
+                icon: Icon(_isEditing ? Icons.save : Icons.edit,
+                    color: Colors.green),
                 onPressed: () {
                   if (_isEditing) {
                     _updateProfileData();
@@ -219,13 +237,16 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildProfileItem('First Name', _firstNameController),
+                            _buildProfileItem(
+                                'First Name', _firstNameController),
                             _buildProfileItem('Last Name', _lastNameController),
                             _buildProfileItem('Contact', _contactController),
                             _buildProfileItem('Email', _emailController),
                           ],
                         )
-                      : const Center(child: Text('Profile data not available.', style: TextStyle(color: Colors.white))),
+                      : const Center(
+                          child: Text('Profile data not available.',
+                              style: TextStyle(color: Colors.white))),
                 ),
               ),
             ),
@@ -241,7 +262,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         children: [
           Text(
             label,
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+            style: const TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.green),
           ),
           if (_isEditing)
             TextFormField(

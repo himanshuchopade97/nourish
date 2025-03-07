@@ -16,7 +16,8 @@ class _DashboardPageState extends State<DashboardPage> {
   double carbs = 0.0;
   double fat = 0.0;
   double fiber = 0.0;
-  String username = "Loading...";
+  String username = "";
+  bool _isLoading = true;
   String userId = '';
   List<String> selectedFoodItems = [];
 
@@ -24,34 +25,39 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     _getUsername();
-    _getSelectedFoodItems(); // Fetch food data on page load
+    _fetchFoodData(); // Fetch food data on page load
   }
 
   Future<String> _getUsername() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('_id', userId);
+   userId = prefs.getString('userId') ?? '';
     setState(() {
       username = prefs.getString('username') ?? "User";
     });
     return username;
   }
 
-  Future<void> _getSelectedFoodItems() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      selectedFoodItems = prefs.getStringList('selected_food') ?? [];
-    });
-    _fetchFoodData(); // Fetch only user-entered food data
-  }
-
   Future<void> _fetchFoodData() async {
-    if (selectedFoodItems.isEmpty) return; // If no food is selected, do nothing
+    setState(() {
+      _isLoading = true; // Set loading to true
+    });
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId');
+    String? token = prefs.getString('token');
+
+    if (userId == null || userId.isEmpty || token == null || token.isEmpty) {
+      setState(() {
+        _isLoading = false; // Set loading to false
+      });
+      return;
+    }
+    print("meow $userId");
     try {
-      final response = await http.post(
-        Uri.parse("http://192.168.1.8:5000/api/auth/food"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"food_items": selectedFoodItems}),
+      final response = await http.get(
+        Uri.parse("http://10.0.2.2:5000/api/food/get-food?userId=$userId"),
+        headers: {"Content-Type": "application/json","Authorization": "Bearer $token"},
+        
       );
 
       if (response.statusCode == 200) {
@@ -67,12 +73,25 @@ class _DashboardPageState extends State<DashboardPage> {
               0, (sum, item) => sum + (item["fat_g"] as num).toDouble());
           fiber = data.fold<double>(
               0, (sum, item) => sum + (item["fibre_g"] as num).toDouble());
+          _isLoading = false; // Set loading to false
         });
       } else {
         print("Error fetching food data: ${response.body}");
+        setState(() {
+          _isLoading = false; // Set loading to false
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load food data: ${response.body}')),
+        );
       }
     } catch (e) {
       print("Network Error: $e");
+      setState(() {
+        _isLoading = false; // Set loading to false
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Network error. Please try again.')),
+      );
     }
   }
 
@@ -211,89 +230,94 @@ class _DashboardPageState extends State<DashboardPage> {
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.black,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
+              child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox(
-                              width: 150,
-                              height: 150,
-                              child: CircularProgressIndicator(
-                                value: (calories / 3000).clamp(0.0, 1.0),
-                                strokeWidth: 10,
-                                backgroundColor: Colors.grey.shade800,
-                                color: Colors.green,
-                              ),
-                            ),
-                            Text(
-                              "$calories\nCalories",
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Column(
-                      children: [
-                        _buildNutrientRow("Protein", protein / 100),
-                        _buildNutrientRow("Fiber", fiber / 100),
-                        _buildNutrientRow("Carbs", carbs / 100),
-                        _buildNutrientRow("Fats", fat / 100),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          Navigator.pushNamed(context, '/addfooditem');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                        ),
-                        child: const Text("Add Food Item"),
-                      ),
-                    ),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        shrinkWrap: true,
-                        physics: AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildCard(
-                            icon: Icons.bloodtype_outlined,
-                            title: "Sugar Levels",
-                            buttonText: "Add new Reading",
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 150,
+                                    height: 150,
+                                    child: CircularProgressIndicator(
+                                      value: (calories / 3000).clamp(0.0, 1.0),
+                                      strokeWidth: 10,
+                                      backgroundColor: Colors.grey.shade800,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                  Text(
+                                    "$calories\nCalories",
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          _buildCard(
-                            icon: Icons.monitor_weight_outlined,
-                            title: "Body Weight",
-                            buttonText: "Add new Reading",
+                          const SizedBox(height: 20),
+                          Column(
+                            children: [
+                              _buildNutrientRow("Protein", protein / 100),
+                              _buildNutrientRow("Fiber", fiber / 100),
+                              _buildNutrientRow("Carbs", carbs / 100),
+                              _buildNutrientRow("Fats", fat / 100),
+                            ],
                           ),
-                          _buildCard(
-                            icon: Icons.visibility_outlined,
-                            title: "Recommendations",
-                            buttonText: "Review",
+                          const SizedBox(height: 20),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                Navigator.pushNamed(context, '/addfooditem');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black,
+                              ),
+                              child: const Text("Add Food Item"),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: GridView.count(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              shrinkWrap: true,
+                              physics: AlwaysScrollableScrollPhysics(),
+                              children: [
+                                _buildCard(
+                                  icon: Icons.bloodtype_outlined,
+                                  title: "Sugar Levels",
+                                  buttonText: "Add new Reading",
+                                ),
+                                _buildCard(
+                                  icon: Icons.monitor_weight_outlined,
+                                  title: "Body Weight",
+                                  buttonText: "Add new Reading",
+                                ),
+                                _buildCard(
+                                  icon: Icons.visibility_outlined,
+                                  title: "Recommendations",
+                                  buttonText: "Review",
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -301,10 +325,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 

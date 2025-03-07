@@ -9,11 +9,11 @@ class FoodService {
       "bb8315f0403a1dc870b93a1cb678a2d9a12fcda4e7b82d02442207314b48a9bc";
 
   Future<String?> _getUserId() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('_id');  // ✅ Retrieve _id from SharedPreferences
-}
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('_id'); // ✅ Retrieve _id from SharedPreferences
+  }
 
-  static const String mongoDbApiUrl = "http://192.168.1.8:5000/api/add-food";
+  static const String mongoDbApiUrl = "http://10.0.2.2:5000/api/food/add-food";
 
   // ✅ Fetch JWT token from SharedPreferences
   static Future<String?> _getAuthToken() async {
@@ -28,8 +28,6 @@ class FoodService {
 
     return token;
   }
-
-  
 
   // ✅ Analyze food using AI (Now includes Glycemic Index)
   static Future<Map<String, dynamic>?> analyzeFood(String food) async {
@@ -72,12 +70,15 @@ class FoodService {
 
           return {
             "food_name": food, // ✅ Store food name
-            "energy_kcal": jsonDecode(nutritionText)["calories"], // Convert "calories" to "energy_kcal"
+            "energy_kcal": jsonDecode(nutritionText)[
+                "calories"], // Convert "calories" to "energy_kcal"
             "carb_g": jsonDecode(nutritionText)["carbs"],
             "protein_g": jsonDecode(nutritionText)["protein"],
             "fat_g": jsonDecode(nutritionText)["fat"],
-            "fibre_g": jsonDecode(nutritionText)["fiber"], // Convert "fiber" to "fibre_g"
-            "glycemic_index": jsonDecode(nutritionText)["glycemic_index"], // ✅ New glycemic index field
+            "fibre_g": jsonDecode(
+                nutritionText)["fiber"], // Convert "fiber" to "fibre_g"
+            "glycemic_index": jsonDecode(
+                nutritionText)["glycemic_index"], // ✅ New glycemic index field
           };
         } else {
           print("❌ Unexpected API response format: $data");
@@ -94,64 +95,90 @@ class FoodService {
   }
 
   // ✅ Add food data to MongoDB (Now includes Glycemic Index)
-static Future<bool> addFoodToDatabase({
-  required String foodName,
-  required double proteinG,
-  required double carbG,
-  required double fatG,
-  required double fibreG,
-  required double energyKcal,
-  required int glycemicIndex,
-}) async {
-  Future<String?> _getUserId() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('_id');  // ✅ Retrieve _id from SharedPreferences
-}
+  static Future<bool> addFoodToDatabase({
+    required String foodName,
+    required int proteinG,
+    required int carbG,
+    required int fatG,
+    required int fibreG,
+    required int energyKcal,
+    required int glycemicIndex,
+    required String? userId,
+  }) async {
+    Future<String?> _getUserId() async {
+      try {
+        final token = await _getAuthToken();
+        if (token == null) {
+          print("❌ Error: No auth token found.");
+          return null;
+        }
 
-  try {
-    final token = await _getAuthToken();
-    if (token == null) {
-      print("❌ Error: No auth token found.");
-      return false;
+        final response = await http.get(
+          Uri.parse(
+              'http://10.0.2.2:5000/api/users/profile'), // Replace with your actual URL
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          print("Fetched user ID from /profile: ${data['_id']}"); // Debugging
+          return data['_id']
+              as String; // Assuming the user ID is in the '_id' field
+        } else {
+          print("❌ Failed to load profile: ${response.body}");
+          return null;
+        }
+      } catch (e) {
+        print("❌ Failed to load profile: $e");
+        return null;
+      } // ✅ Retrieve _id from SharedPreferences
     }
 
-    final userId = await _getUserId(); // ✅ Fetch user ID
-    if (userId == null) {
-      print("❌ Error: No user ID found.");
+    try {
+      final token = await _getAuthToken();
+      if (token == null) {
+        print("❌ Error: No auth token found.");
+        return false;
+      }
+
+      final userId = await _getUserId(); // ✅ Fetch user ID
+      if (userId == null) {
+        print("❌ Error: No user ID found.");
+        return false;
+      }
+
+      final response = await http.post(
+        Uri.parse(mongoDbApiUrl),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: jsonEncode({
+          "userId": userId, // ✅ Include user ID
+          "food_name": foodName,
+          "protein_g": proteinG,
+          "carb_g": carbG,
+          "fat_g": fatG,
+          "fibre_g": fibreG,
+          "energy_kcal": energyKcal,
+          "glycemic_index": glycemicIndex,
+        }),
+      );
+
+      print("📡 Server Response: ${response.statusCode} - ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print("✅ Food successfully added to database!");
+        return true;
+      } else {
+        print("❌ Error adding food to database: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("❌ Exception while sending data: $e");
       return false;
     }
-
-    final response = await http.post(
-      Uri.parse(mongoDbApiUrl),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      },
-      body: jsonEncode({
-        "user_id": userId,  // ✅ Include user ID
-        "food_name": foodName,
-        "protein_g": proteinG,
-        "carb_g": carbG,
-        "fat_g": fatG,
-        "fibre_g": fibreG,
-        "energy_kcal": energyKcal,
-        "glycemic_index": glycemicIndex,
-      }),
-    );
-
-    print("📡 Server Response: ${response.statusCode} - ${response.body}");
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      print("✅ Food successfully added to database!");
-      return true;
-    } else {
-      print("❌ Error adding food to database: ${response.body}");
-      return false;
-    }
-  } catch (e) {
-    print("❌ Exception while sending data: $e");
-    return false;
   }
-}
-
 }

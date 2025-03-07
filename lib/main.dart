@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         '/recommendations': (context) => RecommendationsPage(),
         '/vitals': (context) => VitalsPage(),
         '/addfooditem': (context) => AddFoodItem(),
-         '/profile': (context) => ProfilePage(),
+        '/profile': (context) => ProfilePage(),
       },
       theme: ThemeData(primarySwatch: Colors.green),
       // home:  AddNewFood(),

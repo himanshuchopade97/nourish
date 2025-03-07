@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VitalsPage extends StatefulWidget {
   @override
@@ -8,7 +10,67 @@ class VitalsPage extends StatefulWidget {
 
 class _VitalsPageState extends State<VitalsPage> {
   double bloodSugar = 90.0;
-  double weight = 70.0;
+  double weight = 85.0;
+  String? token;
+
+  Future<void> _loadAuthToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAuthToken();
+  }
+
+  Future<void> _sendVitals() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token'); // Retrieve token
+    print(token);
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please log in first.')),
+      );
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'http://10.0.2.2:5000/api/vitals'), // Replace with your backend URL
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'sugarReading': bloodSugar,
+          'weightReading': weight,
+        }),
+      );
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
+        //Handle response data, like updating local user details, if necessary
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Failed to send vitals. Status: ${response.statusCode}')),
+        );
+      }
+    } catch (error) {
+      print('Error sending vitals: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred. Please try again.')),
+      );
+    }
+  }
 
   void updateVital(String vital, bool increase) {
     setState(() {
@@ -134,6 +196,15 @@ class _VitalsPageState extends State<VitalsPage> {
             SizedBox(height: 20),
             buildInfoContainer("After meal - Less than 140 mg/dL"),
             SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _sendVitals,
+              child: Text(
+                "Send Vitals",
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+            ),
+            SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,

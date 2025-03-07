@@ -1,10 +1,11 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:nourish/pages/loginpage.dart'; // Ensure correct import
+import 'package:nourish/pages/loginpage.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Ensure correct import
 
 Future<void> registerUser(BuildContext context, String firstName, String lastName, String email, String contact, String username, String password) async {
-  final url = Uri.parse('http://192.168.1.8:5000/api/auth/register'); // Update with your registration API URL
+  final url = Uri.parse('http://10.0.2.2:5000/api/auth/register'); // Update with your registration API URL
 
   final data = {
     'firstName': firstName,
@@ -27,7 +28,8 @@ Future<void> registerUser(BuildContext context, String firstName, String lastNam
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User registered successfully!')),
       );
-      Navigator.pushReplacementNamed(context, '/dashboard'); // Or '/login' if you want to navigate to login first
+
+      Navigator.pushReplacementNamed(context, '/login'); // Or '/login' if you want to navigate to login first
     } else {
       // Handle error
       ScaffoldMessenger.of(context).showSnackBar(

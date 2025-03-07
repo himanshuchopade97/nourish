@@ -45,7 +45,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
     });
   }
 
-  void addCustomFood() {
+  void addCustomFood() async {
     String foodName = "";
     double proteinVal = 0.0, fatsVal = 0.0, carbsVal = 0.0, fiberVal = 0.0;
 
@@ -90,7 +90,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
               child: Text("Cancel"),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (foodName.isNotEmpty) {
                   setState(() {
                     foodData[foodName] = {
