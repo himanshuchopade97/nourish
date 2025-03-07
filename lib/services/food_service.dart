@@ -4,16 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FoodService {
-  static const String baseUrl = "https://api.together.xyz/v1/chat/completions";
-  static const String apiKey =
-      "bb8315f0403a1dc870b93a1cb678a2d9a12fcda4e7b82d02442207314b48a9bc";
-
-  Future<String?> _getUserId() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('_id'); // ✅ Retrieve _id from SharedPreferences
-  }
-
-  static const String mongoDbApiUrl = "http://10.0.2.2:5000/api/food/add-food";
+  // API endpoints
+  static const String togetherApiUrl = "https://api.together.xyz/v1/chat/completions";
+  static const String togetherApiKey = "bb8315f0403a1dc870b93a1cb678a2d9a12fcda4e7b82d02442207314b48a9bc";
+  
+  // Backend API base URL (no port specification)
+  static const String backendBaseUrl = "https://nourish-backend-enzv.onrender.com";
+  static const String mongoDbApiUrl = "$backendBaseUrl/api/food/add-food";
+  static const String userProfileUrl = "$backendBaseUrl/api/users/profile";
 
   // ✅ Fetch JWT token from SharedPreferences
   static Future<String?> _getAuthToken() async {
@@ -23,19 +21,69 @@ class FoodService {
     if (token == null) {
       print("❌ No auth token found in SharedPreferences!");
     } else {
-      print("✅ Retrieved auth token: $token");
+      print("✅ Retrieved auth token: ${token.substring(0, 10)}..."); // Only log part of the token for security
     }
 
     return token;
   }
 
+  // ✅ Get user ID - consolidated method that tries SharedPreferences first, then API
+  static Future<String?> _getUserId() async {
+    // First try to get from SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('_id');
+    
+    if (userId != null) {
+      print("✅ Retrieved user ID from SharedPreferences: $userId");
+      return userId;
+    }
+    
+    // If not in SharedPreferences, fetch from API
+    try {
+      final token = await _getAuthToken();
+      if (token == null) {
+        print("❌ Error: No auth token found when trying to get user ID");
+        return null;
+      }
+
+      print("📡 Fetching user profile from: $userProfileUrl");
+      final response = await http.get(
+        Uri.parse(userProfileUrl),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Accept": "application/json",
+        },
+      );
+
+      print("📡 Profile API response status: ${response.statusCode}");
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        userId = data['_id'] as String;
+        
+        // Save to SharedPreferences for future use
+        await prefs.setString('_id', userId);
+        
+        print("✅ Fetched and saved user ID: $userId");
+        return userId;
+      } else {
+        print("❌ Failed to load profile: ${response.statusCode} - ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      print("❌ Exception when loading profile: $e");
+      return null;
+    }
+  }
+
   // ✅ Analyze food using AI (Now includes Glycemic Index)
   static Future<Map<String, dynamic>?> analyzeFood(String food) async {
     try {
+      print("📡 Analyzing food: $food");
       final response = await http.post(
-        Uri.parse(baseUrl),
+        Uri.parse(togetherApiUrl),
         headers: {
-          "Authorization": "Bearer $apiKey",
+          "Authorization": "Bearer $togetherApiKey",
           "Content-Type": "application/json",
         },
         body: jsonEncode({
@@ -57,7 +105,7 @@ class FoodService {
         }),
       );
 
-      print("📡 API Response: ${response.body}");
+      print("📡 AI API Response status: ${response.statusCode}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
@@ -68,24 +116,30 @@ class FoodService {
               .replaceAll("```", "")
               .trim();
 
-          return {
-            "food_name": food, // ✅ Store food name
-            "energy_kcal": jsonDecode(nutritionText)[
-                "calories"], // Convert "calories" to "energy_kcal"
-            "carb_g": jsonDecode(nutritionText)["carbs"],
-            "protein_g": jsonDecode(nutritionText)["protein"],
-            "fat_g": jsonDecode(nutritionText)["fat"],
-            "fibre_g": jsonDecode(
-                nutritionText)["fiber"], // Convert "fiber" to "fibre_g"
-            "glycemic_index": jsonDecode(
-                nutritionText)["glycemic_index"], // ✅ New glycemic index field
-          };
+          // Try to parse the JSON response
+          try {
+            final nutritionData = jsonDecode(nutritionText);
+            
+            return {
+              "food_name": food,
+              "energy_kcal": nutritionData["calories"],
+              "carb_g": nutritionData["carbs"],
+              "protein_g": nutritionData["protein"],
+              "fat_g": nutritionData["fat"],
+              "fibre_g": nutritionData["fiber"],
+              "glycemic_index": nutritionData["glycemic_index"],
+            };
+          } catch (e) {
+            print("❌ Error parsing nutrition JSON: $e");
+            print("⚠️ Nutrition text received: $nutritionText");
+            return null;
+          }
         } else {
           print("❌ Unexpected API response format: $data");
           return null;
         }
       } else {
-        print("❌ Error analyzing food: ${response.body}");
+        print("❌ Error analyzing food: ${response.statusCode} - ${response.body}");
         return null;
       }
     } catch (e) {
@@ -103,81 +157,69 @@ class FoodService {
     required int fibreG,
     required int energyKcal,
     required int glycemicIndex,
-    required String? userId,
+    String? userId, // Optional parameter - we'll fetch it if not provided
   }) async {
-    Future<String?> _getUserId() async {
-      try {
-        final token = await _getAuthToken();
-        if (token == null) {
-          print("❌ Error: No auth token found.");
-          return null;
-        }
-
-        final response = await http.get(
-          Uri.parse(
-              'http://10.0.2.2:5000/api/users/profile'), // Replace with your actual URL
-          headers: {
-            "Authorization": "Bearer $token",
-          },
-        );
-
-        if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
-          print("Fetched user ID from /profile: ${data['_id']}"); // Debugging
-          return data['_id']
-              as String; // Assuming the user ID is in the '_id' field
-        } else {
-          print("❌ Failed to load profile: ${response.body}");
-          return null;
-        }
-      } catch (e) {
-        print("❌ Failed to load profile: $e");
-        return null;
-      } // ✅ Retrieve _id from SharedPreferences
-    }
-
     try {
+      print("📡 Starting addFoodToDatabase process");
+      
+      // Get auth token
       final token = await _getAuthToken();
       if (token == null) {
-        print("❌ Error: No auth token found.");
+        print("❌ Error: No auth token found for adding food.");
         return false;
       }
 
-      final userId = await _getUserId(); // ✅ Fetch user ID
-      if (userId == null) {
-        print("❌ Error: No user ID found.");
-        return false;
+      // Get user ID if not provided
+      final String actualUserId;
+      if (userId != null && userId.isNotEmpty) {
+        actualUserId = userId;
+        print("✅ Using provided userId: $actualUserId");
+      } else {
+        final fetchedId = await _getUserId();
+        if (fetchedId == null) {
+          print("❌ Error: Could not retrieve user ID.");
+          return false;
+        }
+        actualUserId = fetchedId;
+        print("✅ Using fetched userId: $actualUserId");
       }
 
+      // Prepare payload
+      final payload = {
+        "userId": actualUserId,
+        "food_name": foodName,
+        "protein_g": proteinG,
+        "carb_g": carbG,
+        "fat_g": fatG,
+        "fibre_g": fibreG,
+        "energy_kcal": energyKcal,
+        "glycemic_index": glycemicIndex,
+      };
+      
+      print("📤 Sending payload to $mongoDbApiUrl: $payload");
+
+      // Send request
       final response = await http.post(
         Uri.parse(mongoDbApiUrl),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $token",
         },
-        body: jsonEncode({
-          "userId": userId, // ✅ Include user ID
-          "food_name": foodName,
-          "protein_g": proteinG,
-          "carb_g": carbG,
-          "fat_g": fatG,
-          "fibre_g": fibreG,
-          "energy_kcal": energyKcal,
-          "glycemic_index": glycemicIndex,
-        }),
+        body: jsonEncode(payload),
       );
 
-      print("📡 Server Response: ${response.statusCode} - ${response.body}");
+      print("📡 Server Response: ${response.statusCode}");
+      print("📡 Response body: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         print("✅ Food successfully added to database!");
         return true;
       } else {
-        print("❌ Error adding food to database: ${response.body}");
+        print("❌ Error adding food to database: ${response.statusCode} - ${response.body}");
         return false;
       }
     } catch (e) {
-      print("❌ Exception while sending data: $e");
+      print("❌ Exception while adding food to database: $e");
       return false;
     }
   }
