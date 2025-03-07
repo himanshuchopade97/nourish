@@ -44,7 +44,7 @@ class FoodService {
             {
               "role": "system",
               "content":
-                  "You are a nutrition expert. Return valid JSON with only calories, carbs, protein, fat, fiber, and glycemic index. No markdown."
+                  "You are a nutrition expert. Return valid JSON with only calories, carbs, protein, fat, fiber, and glycemic index per 100g food. No markdown."
             },
             {
               "role": "user",
