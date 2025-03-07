@@ -21,8 +21,8 @@ class _ProfilePageState extends State<ProfilePage>
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
 
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _firstnameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _contactController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
@@ -70,8 +70,8 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   void dispose() {
     _animationController.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
+    _firstnameController.dispose();
+    _lastnameController.dispose();
     _emailController.dispose();
     _contactController.dispose();
     super.dispose();
@@ -111,8 +111,8 @@ class _ProfilePageState extends State<ProfilePage>
         setState(() {
           _userData = json.decode(response.body);
           _isLoading = false;
-          _firstNameController.text = _userData['firstName'] ?? '';
-          _lastNameController.text = _userData['lastName'] ?? '';
+          _firstnameController.text = _userData['firstname'] ?? '';
+          _lastnameController.text = _userData['lastname'] ?? '';
           _contactController.text = _userData['contact'] ?? '';
           _emailController.text = _userData['email'] ?? '';
         });
@@ -156,8 +156,8 @@ class _ProfilePageState extends State<ProfilePage>
           'Content-Type': 'application/json',
         },
         body: json.encode({
-          'firstname': _firstNameController.text,
-          'lastname': _lastNameController.text,
+          'firstname': _firstnameController.text,
+          'lastname': _lastnameController.text,
           'contact': _contactController.text,
           'email': _emailController.text,
         }),
@@ -238,8 +238,8 @@ class _ProfilePageState extends State<ProfilePage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildProfileItem(
-                                'First Name', _firstNameController),
-                            _buildProfileItem('Last Name', _lastNameController),
+                                'First Name', _firstnameController),
+                            _buildProfileItem('Last Name', _lastnameController),
                             _buildProfileItem('Contact', _contactController),
                             _buildProfileItem('Email', _emailController),
                           ],

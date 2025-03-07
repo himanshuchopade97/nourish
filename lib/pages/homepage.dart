@@ -97,7 +97,7 @@ class HomePage extends StatelessWidget {
 Widget _featureCard(IconData icon, String title, String subtitle) {
   return Expanded(
     child: Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.green, width: 2),
         color: Colors.black54,
