@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                               _rememberMe = value!;
                             });
                           },
-                          activeColor: Colors.greenAccent,
+                          activeColor: Colors.green.shade700,
                         ),
                         const Text(
                           'Remember me',
