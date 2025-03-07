@@ -6,16 +6,9 @@ class ExplorePremium extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black, // Set background to black
       appBar: AppBar(
-        title: Text('NutriBuddy', style: TextStyle(color: Colors.white)),
+        title: Text('Explore Premium', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.person, color: Colors.white),
-            onPressed: () {
-              // Navigate to sign-up screen
-            },
-          ),
-        ],
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -77,21 +70,21 @@ class ExplorePremium extends StatelessWidget {
               ],
               isCurrent: true,
             ),
-            SizedBox(height: 16),
-            _buildPlanCard(
-              title: 'Pro',
-              price: '\$9.99 /month',
-              features: [
-                'Advanced tracking',
-                'Expanded food database',
-                'Community access',
-                'Nutri-Buddy AI Assistant',
-              ],
-              excludedFeatures: [
-                'Expert Nutrition Guidance',
-              ],
-              buttonText: 'Get Pro',
-            ),
+            // SizedBox(height: 16),
+            // _buildPlanCard(
+            //   title: 'Pro',
+            //   price: '\$9.99 /month',
+            //   features: [
+            //     'Advanced tracking',
+            //     'Expanded food database',
+            //     'Community access',
+            //     'Nutri-Buddy AI Assistant',
+            //   ],
+            //   excludedFeatures: [
+            //     'Expert Nutrition Guidance',
+            //   ],
+            //   buttonText: 'Get Pro',
+            // ),
             SizedBox(height: 16),
             _buildPlanCard(
               title: 'Ultimate',
