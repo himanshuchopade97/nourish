@@ -92,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage>
     }
 
     final url = Uri.parse(
-        'http://10.0.2.2:5000/api/users/profile'); // Adjust URL if needed
+        'https://nourish-backend-enzv.onrender.com/api/users/profile'); // Adjust URL if needed
 
     try {
       final response = await http.get(
@@ -146,7 +146,7 @@ class _ProfilePageState extends State<ProfilePage>
     }
 
     final url = Uri.parse(
-        'http://10.0.2.2:5000/api/users/profile'); // Adjust URL if needed
+        'https://nourish-backend-enzv.onrender.com/api/users/profile'); // Adjust URL if needed
 
     try {
       final response = await http.put(

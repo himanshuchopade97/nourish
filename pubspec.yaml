@@ -39,6 +39,9 @@ dependencies:
   url_launcher: ^6.3.1
   shared_preferences:
   animate_do: ^4.2.0
+  animated_text_kit: ^4.2.3
+  simple_animations: ^5.1.0
+  animations: ^2.0.11
 
 dev_dependencies:
   flutter_test:

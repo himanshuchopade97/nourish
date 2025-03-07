@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nourish/pages/add_food_item.dart';
+import 'package:nourish/pages/premium.dart';
 import 'package:nourish/pages/profilepage.dart';
 import 'package:nourish/pages/recommendations_page.dart';
 import 'package:nourish/pages/dashboard.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         '/vitals': (context) => VitalsPage(),
         '/addfooditem': (context) => AddFoodItem(),
         '/profile': (context) => ProfilePage(),
+        '/premium': (context) => ExplorePremium(),
       },
       theme: ThemeData(primarySwatch: Colors.green),
       // home:  AddNewFood(),

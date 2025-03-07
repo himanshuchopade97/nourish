@@ -35,7 +35,7 @@ class _VitalsPageState extends State<VitalsPage> {
     try {
       final response = await http.post(
         Uri.parse(
-            'http://10.0.2.2:5000/api/vitals/add'), // Replace with your backend URL
+            'https://nourish-backend-enzv.onrender.com/api/vitals/add'), // Replace with your backend URL
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

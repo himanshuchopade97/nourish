@@ -5,7 +5,7 @@ import 'package:nourish/pages/dashboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> loginUser(BuildContext context, String username, String password) async {
-  final url = Uri.parse('http://10.0.2.2:5000/api/auth/login'); // Update with your login API URL
+  final url = Uri.parse('https://nourish-backend-enzv.onrender.com/api/auth/login'); // Update with your login API URL
 
   final data = {
     'username': username, // Send username

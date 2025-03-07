@@ -55,7 +55,7 @@ class _DashboardPageState extends State<DashboardPage> {
     }
     try {
       final response = await http.get(
-        Uri.parse("http://10.0.2.2:5000/api/food/get-food?userId=$userId"),
+        Uri.parse("https://nourish-backend-enzv.onrender.com/api/food/get-food?userId=$userId"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $token"
@@ -219,7 +219,9 @@ class _DashboardPageState extends State<DashboardPage> {
             _buildDrawerItem(
                 icon: Icons.star_outline,
                 title: 'Explore Premium',
-                onTap: () {}),
+                onTap: () {
+                  Navigator.pushNamed(context, '/premium');
+                }),
             const Divider(color: Colors.white),
             _buildDrawerItem(
                 icon: Icons.logout,
