@@ -58,7 +58,7 @@ class ExplorePremium extends StatelessWidget {
             SizedBox(height: 16),
             _buildPlanCard(
               title: 'Free',
-              price: '\$0 /month',
+              price: '\₹0 /month',
               features: [
                 'Basic calorie tracking',
                 'Basic food database',
@@ -70,25 +70,10 @@ class ExplorePremium extends StatelessWidget {
               ],
               isCurrent: true,
             ),
-            // SizedBox(height: 16),
-            // _buildPlanCard(
-            //   title: 'Pro',
-            //   price: '\$9.99 /month',
-            //   features: [
-            //     'Advanced tracking',
-            //     'Expanded food database',
-            //     'Community access',
-            //     'Nutri-Buddy AI Assistant',
-            //   ],
-            //   excludedFeatures: [
-            //     'Expert Nutrition Guidance',
-            //   ],
-            //   buttonText: 'Get Pro',
-            // ),
             SizedBox(height: 16),
             _buildPlanCard(
               title: 'Ultimate',
-              price: '\$19.99 /month',
+              price: '\₹99 /month',
               features: [
                 'Advanced tracking',
                 'Complete food database',

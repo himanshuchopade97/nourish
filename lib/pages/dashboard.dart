@@ -113,7 +113,7 @@ class _DashboardPageState extends State<DashboardPage> {
               color: Colors.green.withOpacity(0.2),
               spreadRadius: 8,
               blurRadius: 5,
-              offset: Offset(0, -2),
+              offset: const Offset(0, -2),
             ),
           ],
         ),
@@ -126,13 +126,14 @@ class _DashboardPageState extends State<DashboardPage> {
               title,
               style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
+              height: 36, // Fixed height for buttons
               child: ElevatedButton(
                 onPressed: () {
                   // Handle button action
@@ -140,14 +141,18 @@ class _DashboardPageState extends State<DashboardPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.black,
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)),
                 ),
-                child: Text(
-                  buttonText,
-                  style: TextStyle(fontSize: 14),
-                  textAlign: TextAlign.center,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    buttonText,
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                  ),
                 ),
               ),
             ),
@@ -167,15 +172,15 @@ class _DashboardPageState extends State<DashboardPage> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Colors.green),
+              decoration: const BoxDecoration(color: Colors.green),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.account_circle, size: 60, color: Colors.white),
-                  SizedBox(height: 10),
+                  const Icon(Icons.account_circle, size: 60, color: Colors.white),
+                  const SizedBox(height: 10),
                   Text(
                     "Welcome, $username",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -314,7 +319,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     color: Colors.green.withOpacity(0.2),
                                     spreadRadius: 7,
                                     blurRadius: 8,
-                                    offset: Offset(0, -2),
+                                    offset: const Offset(0, -2),
                                   ),
                                 ],
                               ),
@@ -325,7 +330,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.green,
                                   foregroundColor: Colors.black,
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 12),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
@@ -347,12 +352,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                 _buildCard(
                                   icon: Icons.bloodtype_outlined,
                                   title: "Sugar Levels",
-                                  buttonText: "Add new Reading",
+                                  buttonText: "Add Reading",
                                 ),
                                 _buildCard(
                                   icon: Icons.monitor_weight_outlined,
                                   title: "Body Weight",
-                                  buttonText: "Add new Reading",
+                                  buttonText: "Add Reading",
                                 ),
                                 _buildCard(
                                   icon: Icons.visibility_outlined,
@@ -362,7 +367,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 _buildCard(
                                   icon: Icons.support_agent,
                                   title: "ChatBot",
-                                  buttonText: "Coming Soon...",
+                                  buttonText: "Coming Soon",
                                 ),
                               ],
                             ),
